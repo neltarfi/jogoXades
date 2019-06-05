@@ -1,11 +1,12 @@
 package aplicacao;
 
-import jogoTabuleiro.Tabuleiro;
+import Xades.PartidaXadres;
 
 public class Programa {
 
 	public static void main(String[] args) {
-		Tabuleiro tabuleiro = new Tabuleiro(8, 8);
+		PartidaXadres partidaXadres = new PartidaXadres();
+		UI.imprimiTabuleiro(partidaXadres.getPecas());
 		
 	}
 
