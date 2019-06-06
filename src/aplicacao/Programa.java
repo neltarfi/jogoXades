@@ -1,6 +1,6 @@
 package aplicacao;
 
-import Xades.PartidaXadres;
+import xadres.PartidaXadres;
 
 public class Programa {
 

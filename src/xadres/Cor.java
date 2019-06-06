@@ -1,4 +1,4 @@
-package Xades;
+package xadres;
 
 public enum Cor {
 	PRETO,

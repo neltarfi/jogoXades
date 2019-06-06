@@ -1,6 +1,6 @@
 package aplicacao;
 
-import Xades.PecaXadres;
+import xadres.PecaXadres;
 
 public class UI {
 	

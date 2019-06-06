@@ -1,4 +1,4 @@
-package Xades;
+package xadres;
 
 import jogoTabuleiro.Peca;
 import jogoTabuleiro.Tabuleiro;
