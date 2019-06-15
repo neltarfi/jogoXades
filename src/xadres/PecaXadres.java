@@ -3,7 +3,7 @@ package xadres;
 import jogoTabuleiro.Peca;
 import jogoTabuleiro.Tabuleiro;
 
-public class PecaXadres extends Peca{
+public abstract class PecaXadres extends Peca{
 	private Cor cor;
 
 	public PecaXadres(Tabuleiro tabuleiro, Cor cor) {

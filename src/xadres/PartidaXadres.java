@@ -36,6 +36,9 @@ public class PartidaXadres {
 		if(!tabuleiro.existePeca(posicao)) {
 			throw new XadresExcecao("Não existe Peça na posição de origem");
 		}
+		if(!tabuleiro.peca(posicao).existeUmMovimentoPossivel()) {
+			throw new XadresExcecao("Não existe um movimwento possivel para esta peça");
+		}
 	}
 	
 	private Peca realizarMovimento(Posicao origem, Posicao destino) {
