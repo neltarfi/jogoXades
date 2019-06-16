@@ -24,10 +24,11 @@ public class PartidaXadres {
 		return mat;
 	}
 	
-	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigen, PosicaoXadres posicaoDestino) {
-		Posicao origem = posicaoOrigen.paraPosicao();
+	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino) {
+		Posicao origem = posicaoOrigem.paraPosicao();
 		Posicao destino = posicaoDestino.paraPosicao();
 		validaPosicaoOrigem(origem);
+		validaPosicaoDestino(origem, destino);
 		Peca pecaCapturada = realizarMovimento(origem, destino);
 		return (PecaXadres)pecaCapturada;
 	}
@@ -38,6 +39,12 @@ public class PartidaXadres {
 		}
 		if(!tabuleiro.peca(posicao).existeUmMovimentoPossivel()) {
 			throw new XadresExcecao("Não existe um movimwento possivel para esta peça");
+		}
+	}
+	
+	private void validaPosicaoDestino(Posicao origem, Posicao destino) {
+		if(!tabuleiro.peca(origem).movimentoPossivel(destino)) {
+			throw new XadresExcecao("Não é possivel mover a peça para a posição de destino");
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package xadres;
 
 import jogoTabuleiro.Peca;
+import jogoTabuleiro.Posicao;
 import jogoTabuleiro.Tabuleiro;
 
 public abstract class PecaXadres extends Peca{
@@ -15,6 +16,9 @@ public abstract class PecaXadres extends Peca{
 		return cor;
 	}
 	
-	
+	protected boolean existeUmaPecaAdiverssaria(Posicao posicao) {
+		PecaXadres p = (PecaXadres)getTabuleiro().peca(posicao);
+		return p != null && p.cor != cor;
+	}
 
 }
