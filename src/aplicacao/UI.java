@@ -21,14 +21,14 @@ public class UI {
 	public static final String ANSI_CIANO = "\u001B[36m";
 	public static final String ANSI_BRANCO = "\u001B[37m";
 
-	public static final String ANSI_PRETO_BACKGROUND = "\u001B[40m";
-	public static final String ANSI_VERMELHO_BACKGROUND = "\u001B[41m";
-	public static final String ANSI_VERDE_BACKGROUND = "\u001B[42m";
-	public static final String ANSI_AMARELO_BACKGROUND = "\u001B[43m";
-	public static final String ANSI_AZUL_BACKGROUND = "\u001B[44m";
-	public static final String ANSI_ROXO_BACKGROUND = "\u001B[45m";
-	public static final String ANSI_CIANO_BACKGROUND = "\u001B[46m";
-	public static final String ANSI_BRANCO_BACKGROUND = "\u001B[47m";
+	public static final String ANSI_PRETO_FUNDO = "\u001B[40m";
+	public static final String ANSI_VERMELHO_FUNDO = "\u001B[41m";
+	public static final String ANSI_VERDE_FUNDO = "\u001B[42m";
+	public static final String ANSI_AMARELO_FUNDO = "\u001B[43m";
+	public static final String ANSI_AZUL_FUNDO = "\u001B[44m";
+	public static final String ANSI_ROXO_FUNDO = "\u001B[45m";
+	public static final String ANSI_CIANO_FUNDO = "\u001B[46m";
+	public static final String ANSI_BRANCO_FUNDO = "\u001B[47m";
 
 	// https://stackoverflow.com/questions/2979383/java-clear-the-console
 	public static void limpaTela() {
@@ -52,16 +52,30 @@ public class UI {
 		for (int i = 0; i < pecas.length; i++) {
 			System.out.print(8 - i + " ");
 			for (int j = 0; j < pecas.length; j++) {
-				imprimePeca(pecas[i][j]);
+				imprimePeca(pecas[i][j], false);
+			}
+			System.out.println();
+		}
+		System.out.println("  a b c d e f g h");
+	}
+	
+	public static void imprimeTabuleiro(PecaXadres[][] pecas, boolean[][] movimentosPossiveis) {
+		for (int i = 0; i < pecas.length; i++) {
+			System.out.print(8 - i + " ");
+			for (int j = 0; j < pecas.length; j++) {
+				imprimePeca(pecas[i][j], movimentosPossiveis[i][j]);
 			}
 			System.out.println();
 		}
 		System.out.println("  a b c d e f g h");
 	}
 
-	private static void imprimePeca(PecaXadres peca) {
+	private static void imprimePeca(PecaXadres peca, boolean fundo) {
+		if(fundo) {
+			System.out.print(ANSI_AZUL_FUNDO);
+		}
 		if (peca == null) {
-            System.out.print("-");
+            System.out.print("-" + ANSI_RESET);
         }
         else {
             if (peca.getCor() == Cor.BRANCO) {

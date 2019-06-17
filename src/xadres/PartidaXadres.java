@@ -24,6 +24,14 @@ public class PartidaXadres {
 		return mat;
 	}
 	
+
+	public boolean[][] movimentosPossiveis(PosicaoXadres posicaoOrigem){
+		Posicao posicao = posicaoOrigem.paraPosicao();
+		validaPosicaoOrigem(posicao);
+		return tabuleiro.peca(posicao).movimentosPossiveis();
+	}
+	
+
 	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino) {
 		Posicao origem = posicaoOrigem.paraPosicao();
 		Posicao destino = posicaoDestino.paraPosicao();

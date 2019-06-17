@@ -20,6 +20,10 @@ public class Programa {
 				System.out.println();
 				System.out.print("Origem: ");
 				PosicaoXadres origem = UI.lerPosicaoXadres(sc);
+				
+				boolean[][] movimentosPossiveis = partidaXadres.movimentosPossiveis(origem);
+				UI.limpaTela();
+				UI.imprimeTabuleiro(partidaXadres.getPecas(), movimentosPossiveis);
 				System.out.println();
 				System.out.print("Destino: ");
 				PosicaoXadres destino = UI.lerPosicaoXadres(sc);
