@@ -7,11 +7,24 @@ import xadres.pecas.Rei;
 import xadres.pecas.Torre;
 
 public class PartidaXadres {
+	
+	private int turn;
+	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
 	
 	public PartidaXadres() {
 		tabuleiro = new Tabuleiro(8, 8);
+		turn = 1;
+		jogadorAtual = Cor.BRANCO;
 		configuracaoInicial();
+	}
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Cor getJogadorAtual() {
+		return jogadorAtual;
 	}
 	
 	public PecaXadres[][] getPecas() {
@@ -38,12 +51,16 @@ public class PartidaXadres {
 		validaPosicaoOrigem(origem);
 		validaPosicaoDestino(origem, destino);
 		Peca pecaCapturada = realizarMovimento(origem, destino);
+		trocaTurn();
 		return (PecaXadres)pecaCapturada;
 	}
 	
 	private void validaPosicaoOrigem(Posicao posicao) {
 		if(!tabuleiro.existePeca(posicao)) {
 			throw new XadresExcecao("Não existe Peça na posição de origem");
+		}
+		if(jogadorAtual != ((PecaXadres)tabuleiro.peca(posicao)).getCor()) {
+			throw new XadresExcecao("Essa peça não é sua");
 		}
 		if(!tabuleiro.peca(posicao).existeUmMovimentoPossivel()) {
 			throw new XadresExcecao("Não existe um movimwento possivel para esta peça");
@@ -61,6 +78,11 @@ public class PartidaXadres {
 		Peca pecaCapturada = tabuleiro.removePeca(destino);
 		tabuleiro.colocarPeca(p, destino);
 		return pecaCapturada;
+	}
+	
+	public void trocaTurn() {
+		turn++;
+		jogadorAtual = (jogadorAtual == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
 	}
 	
 	private void colocaNovaPeca(char coluna, int linha, PecaXadres peca) {
