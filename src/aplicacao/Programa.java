@@ -1,6 +1,8 @@
 package aplicacao;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import xadres.PartidaXadres;
@@ -13,10 +15,11 @@ public class Programa {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		PartidaXadres partidaXadres = new PartidaXadres();
+		List<PecaXadres> capturadas = new ArrayList<>();
 		while(true) {
 			try {
 				UI.limpaTela();
-				UI.imprimePartida(partidaXadres);
+				UI.imprimePartida(partidaXadres, capturadas);
 				System.out.println();
 				System.out.print("Origem: ");
 				PosicaoXadres origem = UI.lerPosicaoXadres(sc);
@@ -28,6 +31,9 @@ public class Programa {
 				System.out.print("Destino: ");
 				PosicaoXadres destino = UI.lerPosicaoXadres(sc);
 				PecaXadres pecaCapturada = partidaXadres.realizarMovimentoXadres(origem, destino);
+				if (pecaCapturada != null) {
+					capturadas.add(pecaCapturada);
+				}
 			}
 			catch (XadresExcecao e) {
 				System.out.println(e.getMessage());
