@@ -59,6 +59,9 @@ public class UI {
 		System.out.println();
 		System.out.println("Turn: " + partidaXadres.getTurn());
 		System.out.println("Esperando o jogador: " + partidaXadres.getJogadorAtual());
+		if (partidaXadres.getCheck()) {
+			System.out.println("CHECK!");
+		}
 	}
 	
 	public static void imprimeTabuleiro(PecaXadres[][] pecas) {
