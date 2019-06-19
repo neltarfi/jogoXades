@@ -58,9 +58,15 @@ public class UI {
 		imprimirPecasCapturadas(capturadas);
 		System.out.println();
 		System.out.println("Turn: " + partidaXadres.getTurn());
-		System.out.println("Esperando o jogador: " + partidaXadres.getJogadorAtual());
-		if (partidaXadres.getCheck()) {
-			System.out.println("CHECK!");
+		if(!partidaXadres.getCheckMate()) {
+			System.out.println("Esperando o jogador: " + partidaXadres.getJogadorAtual());
+			if (partidaXadres.getCheck()) {
+				System.out.println("CHECK!");
+			}
+		}
+		else {
+			System.out.println("CHECKMATE!");
+			System.out.println("Ganhador: " + partidaXadres.getJogadorAtual());
 		}
 	}
 	

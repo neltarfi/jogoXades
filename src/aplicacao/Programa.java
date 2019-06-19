@@ -16,7 +16,7 @@ public class Programa {
 		Scanner sc = new Scanner(System.in);
 		PartidaXadres partidaXadres = new PartidaXadres();
 		List<PecaXadres> capturadas = new ArrayList<>();
-		while(true) {
+		while(!partidaXadres.getCheckMate()) {
 			try {
 				UI.limpaTela();
 				UI.imprimePartida(partidaXadres, capturadas);
@@ -44,6 +44,8 @@ public class Programa {
 				sc.nextLine();
 			}
 		}
+		UI.limpaTela();
+		UI.imprimePartida(partidaXadres, capturadas);
 		
 	}
 

@@ -16,6 +16,7 @@ public class PartidaXadres {
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
 	private boolean check;
+	private boolean checkMate;
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
 	private List<Peca> pecasCapturadas = new ArrayList<>();
 	
@@ -36,6 +37,10 @@ public class PartidaXadres {
 	
 	public boolean getCheck() {
 		return check;
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public PecaXadres[][] getPecas() {
@@ -67,7 +72,12 @@ public class PartidaXadres {
 			throw new XadresExcecao("Você não pode se colocar em check");
 		}
 		check = (testeCheck(oponente(jogadorAtual)))? true : false;
-		trocaTurn();
+		if (testeCheckMate(oponente(jogadorAtual))) {
+			checkMate = true;
+		}
+		else {
+			trocaTurn();
+		}
 		return (PecaXadres)pecaCapturada;
 	}
 	
@@ -101,7 +111,7 @@ public class PartidaXadres {
 	}
 	
 	public void desfazerMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
-		Peca p = tabuleiro.peca(destino);
+		Peca p = tabuleiro.removePeca(destino);
 		tabuleiro.colocarPeca(p, origem);
 		if (pecaCapturada != null) {
 			tabuleiro.colocarPeca(pecaCapturada, destino);
@@ -141,24 +151,42 @@ public class PartidaXadres {
 		return false;
 	}
 	
+	public boolean testeCheckMate(Cor cor) {
+		if (!testeCheck(cor)) {
+			return false;
+		}
+		List<Peca> list = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres)x).getCor() == cor).collect(Collectors.toList());
+		for(Peca p : list) {
+			boolean[][] mat = p.movimentosPossiveis();
+			for(int i=0;i<mat.length;i++) {
+				for(int j=0;j<mat.length;j++) {
+					if (mat[i][j]) {
+						Posicao origem = ((PecaXadres)p).getPosicaoXadres().paraPosicao();
+						Posicao destino = new Posicao(i, j);
+						Peca pecaCapturada = realizarMovimento(origem, destino);
+						boolean testeCheck = testeCheck(cor);
+						desfazerMovimento(origem, destino, pecaCapturada);
+						if (!testeCheck) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	private void colocaNovaPeca(char coluna, int linha, PecaXadres peca) {
 		tabuleiro.colocarPeca(peca,new PosicaoXadres(coluna, linha).paraPosicao());
 		pecasNoTabuleiro.add(peca);
 	}
 	
 	private void configuracaoInicial() {
-		colocaNovaPeca('c', 1, new Torre(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('c', 2, new Torre(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('d', 2, new Torre(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('e', 2, new Torre(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('e', 1, new Torre(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('d', 1, new Rei(tabuleiro, Cor.BRANCO));
+		colocaNovaPeca('h', 7, new Torre(tabuleiro, Cor.BRANCO));
+		colocaNovaPeca('d', 1, new Torre(tabuleiro, Cor.BRANCO));
+		colocaNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCO));
 
-		colocaNovaPeca('c', 7, new Torre(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('c', 8, new Torre(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('d', 7, new Torre(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('e', 7, new Torre(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('e', 8, new Torre(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('d', 8, new Rei(tabuleiro, Cor.PRETO));
+		colocaNovaPeca('b', 8, new Torre(tabuleiro, Cor.PRETO));
+		colocaNovaPeca('a', 8, new Rei(tabuleiro, Cor.PRETO));
 	}
 }
