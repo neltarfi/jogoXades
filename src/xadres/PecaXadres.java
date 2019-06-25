@@ -6,6 +6,7 @@ import jogoTabuleiro.Tabuleiro;
 
 public abstract class PecaXadres extends Peca{
 	private Cor cor;
+	private int contagemDeMovimento;
 
 	public PecaXadres(Tabuleiro tabuleiro, Cor cor) {
 		super(tabuleiro);
@@ -16,6 +17,17 @@ public abstract class PecaXadres extends Peca{
 		return cor;
 	}
 	
+	public int getContagemDeMovimento() {
+		return contagemDeMovimento;
+	}
+	
+	public void incrementaCotagemDeMovimento() {
+		contagemDeMovimento++;
+	}
+	
+	public void decrementaCotagemDeMovimento() {
+		contagemDeMovimento--;
+	}
 	public PosicaoXadres getPosicaoXadres() {
 		return PosicaoXadres.dePosicao(posicao);
 	}

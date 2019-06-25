@@ -100,7 +100,8 @@ public class PartidaXadres {
 	}
 	
 	private Peca realizarMovimento(Posicao origem, Posicao destino) {
-		Peca p = tabuleiro.removePeca(origem);
+		PecaXadres p = (PecaXadres)tabuleiro.removePeca(origem);
+		p.incrementaCotagemDeMovimento();
 		Peca pecaCapturada = tabuleiro.removePeca(destino);
 		tabuleiro.colocarPeca(p, destino);
 		if (pecaCapturada != null) {
@@ -111,7 +112,8 @@ public class PartidaXadres {
 	}
 	
 	public void desfazerMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
-		Peca p = tabuleiro.removePeca(destino);
+		PecaXadres p = (PecaXadres)tabuleiro.removePeca(destino);
+		p.decrementaCotagemDeMovimento();
 		tabuleiro.colocarPeca(p, origem);
 		if (pecaCapturada != null) {
 			tabuleiro.colocarPeca(pecaCapturada, destino);
