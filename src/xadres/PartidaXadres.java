@@ -15,7 +15,7 @@ import xadres.pecas.Rei;
 import xadres.pecas.Torre;
 
 public class PartidaXadres {
-	
+
 	private int turn;
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
@@ -23,47 +23,45 @@ public class PartidaXadres {
 	private boolean checkMate;
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
 	private List<Peca> pecasCapturadas = new ArrayList<>();
-	
+
 	public PartidaXadres() {
 		tabuleiro = new Tabuleiro(8, 8);
 		turn = 1;
 		jogadorAtual = Cor.BRANCO;
 		configuracaoInicial();
 	}
-	
+
 	public int getTurn() {
 		return turn;
 	}
-	
+
 	public Cor getJogadorAtual() {
 		return jogadorAtual;
 	}
-	
+
 	public boolean getCheck() {
 		return check;
 	}
-	
+
 	public boolean getCheckMate() {
 		return checkMate;
 	}
-	
+
 	public PecaXadres[][] getPecas() {
 		PecaXadres[][] mat = new PecaXadres[tabuleiro.getLinhas()][tabuleiro.getColunas()];
-		for (int i=0;i<tabuleiro.getLinhas();i++) {
-			for(int j=0;j<tabuleiro.getColunas();j++) {
-				mat[i][j] = (PecaXadres)tabuleiro.peca(i, j);
+		for (int i = 0; i < tabuleiro.getLinhas(); i++) {
+			for (int j = 0; j < tabuleiro.getColunas(); j++) {
+				mat[i][j] = (PecaXadres) tabuleiro.peca(i, j);
 			}
 		}
 		return mat;
 	}
-	
 
-	public boolean[][] movimentosPossiveis(PosicaoXadres posicaoOrigem){
+	public boolean[][] movimentosPossiveis(PosicaoXadres posicaoOrigem) {
 		Posicao posicao = posicaoOrigem.paraPosicao();
 		validaPosicaoOrigem(posicao);
 		return tabuleiro.peca(posicao).movimentosPossiveis();
 	}
-	
 
 	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino) {
 		Posicao origem = posicaoOrigem.paraPosicao();
@@ -75,36 +73,35 @@ public class PartidaXadres {
 			desfazerMovimento(origem, destino, pecaCapturada);
 			throw new XadresExcecao("Você não pode se colocar em check");
 		}
-		check = (testeCheck(oponente(jogadorAtual)))? true : false;
+		check = (testeCheck(oponente(jogadorAtual))) ? true : false;
 		if (testeCheckMate(oponente(jogadorAtual))) {
 			checkMate = true;
-		}
-		else {
+		} else {
 			trocaTurn();
 		}
-		return (PecaXadres)pecaCapturada;
+		return (PecaXadres) pecaCapturada;
 	}
-	
+
 	private void validaPosicaoOrigem(Posicao posicao) {
-		if(!tabuleiro.existePeca(posicao)) {
+		if (!tabuleiro.existePeca(posicao)) {
 			throw new XadresExcecao("Não existe Peça na posição de origem");
 		}
-		if(jogadorAtual != ((PecaXadres)tabuleiro.peca(posicao)).getCor()) {
+		if (jogadorAtual != ((PecaXadres) tabuleiro.peca(posicao)).getCor()) {
 			throw new XadresExcecao("Essa peça não é sua");
 		}
-		if(!tabuleiro.peca(posicao).existeUmMovimentoPossivel()) {
+		if (!tabuleiro.peca(posicao).existeUmMovimentoPossivel()) {
 			throw new XadresExcecao("Não existe um movimwento possivel para esta peça");
 		}
 	}
-	
+
 	private void validaPosicaoDestino(Posicao origem, Posicao destino) {
-		if(!tabuleiro.peca(origem).movimentoPossivel(destino)) {
+		if (!tabuleiro.peca(origem).movimentoPossivel(destino)) {
 			throw new XadresExcecao("Não é possivel mover a peça para a posição de destino");
 		}
 	}
-	
+
 	private Peca realizarMovimento(Posicao origem, Posicao destino) {
-		PecaXadres p = (PecaXadres)tabuleiro.removePeca(origem);
+		PecaXadres p = (PecaXadres) tabuleiro.removePeca(origem);
 		p.incrementaCotagemDeMovimento();
 		Peca pecaCapturada = tabuleiro.removePeca(destino);
 		tabuleiro.colocarPeca(p, destino);
@@ -112,11 +109,30 @@ public class PartidaXadres {
 			pecasNoTabuleiro.remove(pecaCapturada);
 			pecasCapturadas.add(pecaCapturada);
 		}
+
+		// Movimento especial Rock pequeno da torre
+		if (p instanceof Rei && destino.getColuna() == origem.getColuna() + 2) {
+			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() + 3);
+			Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() + 1);
+			PecaXadres torre = (PecaXadres) tabuleiro.removePeca(origemT);
+			tabuleiro.colocarPeca(torre, destinoT);
+			torre.incrementaCotagemDeMovimento();
+
+		}
+		// Movimento especial Rock grande da torre
+		if (p instanceof Rei && destino.getColuna() == origem.getColuna() - 2) {
+			Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() - 4);
+			Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() - 1);
+			PecaXadres torre = (PecaXadres) tabuleiro.removePeca(origemT);
+			tabuleiro.colocarPeca(torre, destinoT);
+			torre.incrementaCotagemDeMovimento();
+
+		}
 		return pecaCapturada;
 	}
-	
+
 	public void desfazerMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
-		PecaXadres p = (PecaXadres)tabuleiro.removePeca(destino);
+		PecaXadres p = (PecaXadres) tabuleiro.removePeca(destino);
 		p.decrementaCotagemDeMovimento();
 		tabuleiro.colocarPeca(p, origem);
 		if (pecaCapturada != null) {
@@ -124,50 +140,71 @@ public class PartidaXadres {
 			pecasCapturadas.remove(pecaCapturada);
 			pecasNoTabuleiro.add(pecaCapturada);
 		}
+		// Movimento especial Rock pequeno da torre
+				if (p instanceof Rei && destino.getColuna() == origem.getColuna() + 2) {
+					Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() + 3);
+					Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() + 1);
+					PecaXadres torre = (PecaXadres) tabuleiro.removePeca(destinoT);
+					tabuleiro.colocarPeca(torre, origemT);
+					torre.decrementaCotagemDeMovimento();
+
+				}
+				// Movimento especial Rock grande da torre
+				if (p instanceof Rei && destino.getColuna() == origem.getColuna() - 2) {
+					Posicao origemT = new Posicao(origem.getLinha(), origem.getColuna() - 4);
+					Posicao destinoT = new Posicao(origem.getLinha(), origem.getColuna() - 1);
+					PecaXadres torre = (PecaXadres) tabuleiro.removePeca(destinoT);
+					tabuleiro.colocarPeca(torre, origemT);
+					torre.decrementaCotagemDeMovimento();
+
+				}
 	}
-	
+
 	public void trocaTurn() {
 		turn++;
 		jogadorAtual = (jogadorAtual == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
 	}
-	
+
 	public Cor oponente(Cor cor) {
-		return (cor == Cor.BRANCO)? Cor.PRETO : Cor.BRANCO;
+		return (cor == Cor.BRANCO) ? Cor.PRETO : Cor.BRANCO;
 	}
-	
+
 	private PecaXadres Rei(Cor cor) {
-		List<Peca> list = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres)x).getCor() == cor).collect(Collectors.toList());
-		for(Peca p : list) {
-			if(p instanceof Rei) {
-				return (PecaXadres)p;
+		List<Peca> list = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres) x).getCor() == cor)
+				.collect(Collectors.toList());
+		for (Peca p : list) {
+			if (p instanceof Rei) {
+				return (PecaXadres) p;
 			}
 		}
 		throw new IllegalStateException("Não existe o Rei da cor " + cor + " no tabuleiro");
 	}
-	
+
 	public boolean testeCheck(Cor cor) {
 		Posicao posicaoDoRei = Rei(cor).getPosicaoXadres().paraPosicao();
-		List<Peca> pecasOponentes = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres)x).getCor() == oponente(cor)).collect(Collectors.toList());
-		for(Peca p : pecasOponentes) {
+		List<Peca> pecasOponentes = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres) x).getCor() == oponente(cor))
+				.collect(Collectors.toList());
+		for (Peca p : pecasOponentes) {
 			boolean[][] mat = p.movimentosPossiveis();
-			if(mat[posicaoDoRei.getLinha()][posicaoDoRei.getColuna()]) {
+			if (mat[posicaoDoRei.getLinha()][posicaoDoRei.getColuna()]) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean testeCheckMate(Cor cor) {
 		if (!testeCheck(cor)) {
 			return false;
 		}
-		List<Peca> list = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres)x).getCor() == cor).collect(Collectors.toList());
-		for(Peca p : list) {
+		List<Peca> list = pecasNoTabuleiro.stream().filter(x -> ((PecaXadres) x).getCor() == cor)
+				.collect(Collectors.toList());
+		for (Peca p : list) {
 			boolean[][] mat = p.movimentosPossiveis();
-			for(int i=0;i<mat.length;i++) {
-				for(int j=0;j<mat.length;j++) {
+			for (int i = 0; i < mat.length; i++) {
+				for (int j = 0; j < mat.length; j++) {
 					if (mat[i][j]) {
-						Posicao origem = ((PecaXadres)p).getPosicaoXadres().paraPosicao();
+						Posicao origem = ((PecaXadres) p).getPosicaoXadres().paraPosicao();
 						Posicao destino = new Posicao(i, j);
 						Peca pecaCapturada = realizarMovimento(origem, destino);
 						boolean testeCheck = testeCheck(cor);
@@ -181,18 +218,18 @@ public class PartidaXadres {
 		}
 		return true;
 	}
-	
+
 	private void colocaNovaPeca(char coluna, int linha, PecaXadres peca) {
-		tabuleiro.colocarPeca(peca,new PosicaoXadres(coluna, linha).paraPosicao());
+		tabuleiro.colocarPeca(peca, new PosicaoXadres(coluna, linha).paraPosicao());
 		pecasNoTabuleiro.add(peca);
 	}
-	
+
 	private void configuracaoInicial() {
 		colocaNovaPeca('a', 1, new Torre(tabuleiro, Cor.BRANCO));
 		colocaNovaPeca('b', 1, new Cavalo(tabuleiro, Cor.BRANCO));
 		colocaNovaPeca('c', 1, new Bispo(tabuleiro, Cor.BRANCO));
 		colocaNovaPeca('d', 1, new Rainha(tabuleiro, Cor.BRANCO));
-		colocaNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCO));
+		colocaNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCO, this));
 		colocaNovaPeca('f', 1, new Bispo(tabuleiro, Cor.BRANCO));
 		colocaNovaPeca('g', 1, new Cavalo(tabuleiro, Cor.BRANCO));
 		colocaNovaPeca('h', 1, new Torre(tabuleiro, Cor.BRANCO));
@@ -209,7 +246,7 @@ public class PartidaXadres {
 		colocaNovaPeca('b', 8, new Cavalo(tabuleiro, Cor.PRETO));
 		colocaNovaPeca('c', 8, new Bispo(tabuleiro, Cor.PRETO));
 		colocaNovaPeca('d', 8, new Rainha(tabuleiro, Cor.PRETO));
-		colocaNovaPeca('e', 8, new Rei(tabuleiro, Cor.PRETO));
+		colocaNovaPeca('e', 8, new Rei(tabuleiro, Cor.PRETO, this));
 		colocaNovaPeca('f', 8, new Bispo(tabuleiro, Cor.PRETO));
 		colocaNovaPeca('g', 8, new Cavalo(tabuleiro, Cor.PRETO));
 		colocaNovaPeca('h', 8, new Torre(tabuleiro, Cor.PRETO));
