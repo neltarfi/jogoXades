@@ -1,5 +1,6 @@
 package xadres;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class PartidaXadres {
 	private boolean check;
 	private boolean checkMate;
 	private PecaXadres vuneravelEnPassant;
+	private PecaXadres promocao;
 	private List<Peca> pecasNoTabuleiro = new ArrayList<>();
 	private List<Peca> pecasCapturadas = new ArrayList<>();
 
@@ -51,6 +53,10 @@ public class PartidaXadres {
 	public PecaXadres getVuneravelEnPassant() {
 		return vuneravelEnPassant;
 	}
+	
+	public PecaXadres getPromocao() {
+		return promocao;
+	}
 
 	public PecaXadres[][] getPecas() {
 		PecaXadres[][] mat = new PecaXadres[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -68,7 +74,7 @@ public class PartidaXadres {
 		return tabuleiro.peca(posicao).movimentosPossiveis();
 	}
 
-	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino) {
+	public PecaXadres realizarMovimentoXadres(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino, String tipoPromocao) {
 		Posicao origem = posicaoOrigem.paraPosicao();
 		Posicao destino = posicaoDestino.paraPosicao();
 		validaPosicaoOrigem(origem);
@@ -79,7 +85,17 @@ public class PartidaXadres {
 			throw new XadresExcecao("Você não pode se colocar em check");
 		}
 		PecaXadres pecaMovida = (PecaXadres) tabuleiro.peca(destino);
-
+		
+		// Movimento especial promoção
+		promocao = null;
+		if(pecaMovida instanceof Peao) {
+			if(pecaMovida.getCor() == Cor.BRANCO && destino.getLinha() == 0  || pecaMovida.getCor() == Cor.PRETO && destino.getLinha() == 7 ) {
+				promocao = (PecaXadres)tabuleiro.peca(destino);
+				promocao = substituirPecaPromovida(tipoPromocao);
+			}
+		}
+		
+		
 		check = (testeCheck(oponente(jogadorAtual))) ? true : false;
 		if (testeCheckMate(oponente(jogadorAtual))) {
 			checkMate = true;
@@ -113,6 +129,44 @@ public class PartidaXadres {
 		if (!tabuleiro.peca(origem).movimentoPossivel(destino)) {
 			throw new XadresExcecao("Não é possivel mover a peça para a posição de destino");
 		}
+	}
+	
+	public boolean testePromocao(PosicaoXadres posicaoOrigem, PosicaoXadres posicaoDestino) {
+		Posicao origem = posicaoOrigem.paraPosicao();
+		Posicao destino = posicaoDestino.paraPosicao();
+		validaPosicaoOrigem(origem);
+		validaPosicaoDestino(origem, destino);
+		PecaXadres peca = (PecaXadres)tabuleiro.peca(origem);
+		if(peca instanceof Peao) {
+			if(destino.getLinha() == 0 || destino.getLinha() == 7) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public PecaXadres substituirPecaPromovida(String tipo) {
+		if(promocao == null) {
+			throw new IllegalStateException("Não é uma peça promovida");
+		}
+		if(!tipo.equals("B") && !tipo.equals("C") && !tipo.equals("T") && !tipo.equals("A")) {
+			throw new InvalidParameterException("Tipo inválido de promoção");
+		}
+		Posicao pos = promocao.getPosicaoXadres().paraPosicao();
+		Peca p = tabuleiro.removePeca(pos);
+		pecasNoTabuleiro.remove(p);
+		PecaXadres novaPeca = novaPeca(tipo, promocao.getCor());
+		tabuleiro.colocarPeca(novaPeca, pos);
+		pecasNoTabuleiro.add(novaPeca);
+		
+		return null;
+	}
+	
+	private PecaXadres novaPeca(String tipo, Cor cor) {
+		if (tipo.equals("B")) return new Bispo(tabuleiro, cor);
+		if (tipo.equals("C")) return new Cavalo(tabuleiro, cor);
+		if (tipo.equals("T")) return new Torre(tabuleiro, cor);
+		return new Rainha(tabuleiro, cor);
 	}
 
 	private Peca realizarMovimento(Posicao origem, Posicao destino) {

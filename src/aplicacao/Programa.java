@@ -1,5 +1,6 @@
 package aplicacao;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -15,6 +16,7 @@ public class Programa {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		PartidaXadres partidaXadres = new PartidaXadres();
+		String tipoPromocao;
 		List<PecaXadres> capturadas = new ArrayList<>();
 		while(!partidaXadres.getCheckMate()) {
 			try {
@@ -30,7 +32,15 @@ public class Programa {
 				System.out.println();
 				System.out.print("Destino: ");
 				PosicaoXadres destino = UI.lerPosicaoXadres(sc);
-				PecaXadres pecaCapturada = partidaXadres.realizarMovimentoXadres(origem, destino);
+				if (partidaXadres.testePromocao(origem, destino)) {
+					System.out.print("Entre com a peça para promoção (A/B/C/T): ");
+					tipoPromocao = sc.nextLine();
+					UI.testeTipo(tipoPromocao);
+				}
+				else {
+					tipoPromocao = null;
+				}
+				PecaXadres pecaCapturada = partidaXadres.realizarMovimentoXadres(origem, destino, tipoPromocao);
 				if (pecaCapturada != null) {
 					capturadas.add(pecaCapturada);
 				}
@@ -40,6 +50,14 @@ public class Programa {
 				sc.nextLine();
 			}
 			catch (InputMismatchException e) {
+				System.out.println(e.getMessage());
+				sc.nextLine();
+			}
+			catch (IllegalStateException e) {
+				System.out.println(e.getMessage());
+				sc.nextLine();
+			}
+			catch (InvalidParameterException e) {
 				System.out.println(e.getMessage());
 				sc.nextLine();
 			}

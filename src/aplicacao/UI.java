@@ -1,5 +1,6 @@
 package aplicacao;
 
+import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -38,6 +39,12 @@ public class UI {
 	public static void limpaTela() {
 		System.out.print("\033[H\033[2J");
 		System.out.flush();
+	}
+	
+	public static void testeTipo(String tipo) {
+		if(!tipo.equals("B") && !tipo.equals("C") && !tipo.equals("T") && !tipo.equals("A")) {
+			throw new InvalidParameterException("Tipo inválido de promoção");
+		}
 	}
 	
 	public static PosicaoXadres lerPosicaoXadres(Scanner sc) {
